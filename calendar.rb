@@ -1,7 +1,12 @@
 require 'date'
 
 class Calendar
+# インスタンス変数 @target_date に対応するゲッターメソッドを自動生成する。
+# つまり、target_date という名前のメソッドがクラスに定義されます。
+# このゲッターメソッドを使って、外部から @target_date の値を取得できるようにする。
   attr_reader :target_date
+
+
 
   def initialize(year = Date.today.year, month = Date.today.month)
     @target_date = Date.new(year, month, 1) # 指定された年月の月初日
@@ -84,6 +89,7 @@ def main
     # 月が範囲外の場合のエラーメッセージ
     puts '月は1から12の間で指定してください。'
   end
+  puts calendar.target_date # 外部から @target_date の値を取得
 end
 
 # プログラムを実行

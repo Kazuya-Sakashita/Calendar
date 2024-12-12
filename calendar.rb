@@ -1,48 +1,77 @@
 require 'date'
 
-# class Calendar
 class Calendar
-  DEFAULT_DATE = Date.today
-
   attr_reader :target_date
 
-  def initialize(target_date = DEFAULT_DATE)
-    @target_date = target_date
+  def initialize(year = Date.today.year, month = Date.today.month)
+    @target_date = Date.new(year, month, 1)
   end
 
   def print_calendar
-    # 中央揃えした年月を出力
-    puts @target_date.strftime('%B %Y').center(20)
-
-    # 曜日一覧を出力
-    puts 'Su Mo Tu We Th Fr Sa'
-
-    # 月末と月初の日付を取得
-    this_year = @target_date.year
-    this_month = @target_date.month
-    first_day = Date.new(this_year, this_month, 1)
-    last_day = Date.new(this_month, this_month, -1)
-
-    # 冒頭の空白部分を出力
-    first_day_wday = first_day.wday
-    blank = '   ' * first_day_wday
-    print blank
-
-    # カレンダーの日付部分を出力
-    print_date(last_day, first_day_wday)
+    print_header
+    print_days
   end
 
   private
 
-  def print_date(last_day, first_day_wday)
+  # ヘッダー部分を出力（年月と曜日）
+  def print_header
+    puts @target_date.strftime('%B %Y').center(20)
+    puts 'Su Mo Tu We Th Fr Sa'
+  end
+
+  # 日付部分を出力
+  def print_days
+    first_day = @target_date
+    last_day = Date.new(@target_date.year, @target_date.month, -1)
+
+    # 空白を出力
+    print '   ' * first_day.wday
+
+    # 日付を出力
     (1..last_day.day).each do |day|
-      printf('%2d ', day)
-      puts "\n" if ((first_day_wday + day) % 7).zero?
+      weekday = (first_day.wday + day - 1) % 7
+      print format_day(day, weekday)
+      puts if weekday == 6 # 土曜日の後に改行
     end
-    puts "\n"
+    puts
+  end
+
+  # 日付をフォーマットし、色を付ける
+  def format_day(day, weekday)
+    colored_day = colorize_day(day, weekday)
+    sprintf('%2s ', colored_day)
+  end
+
+  # 曜日に応じて色を付ける
+  def colorize_day(day, weekday)
+    case weekday
+    when 0 # 日曜日
+      "\e[31m#{day}\e[0m" # 赤色
+    when 6 # 土曜日
+      "\e[34m#{day}\e[0m" # 青色
+    else
+      day.to_s
+    end
   end
 end
 
-# 今月のカレンダー
-this_month_calendar = Calendar.new
-this_month_calendar.print_calendar
+# 実行部分
+def main
+  # ユーザーに年月を入力させる
+  puts '表示したいカレンダーの年を入力してください（例: 2024）:'
+  year = gets.chomp.to_i
+  puts '表示したいカレンダーの月を入力してください（1-12）:'
+  month = gets.chomp.to_i
+
+  # カレンダーを表示
+  if month.between?(1, 12)
+    calendar = Calendar.new(year, month)
+    calendar.print_calendar
+  else
+    puts '月は1から12の間で指定してください。'
+  end
+end
+
+# プログラムを実行
+main

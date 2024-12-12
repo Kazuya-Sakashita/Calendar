@@ -34,24 +34,24 @@ class Calendar
       print format_day(day, weekday)
       puts if weekday == 6 # 土曜日の後に改行
     end
-    puts
+    puts # 最後の改行
   end
 
   # 日付をフォーマットし、色を付ける
   def format_day(day, weekday)
-    colored_day = colorize_day(day, weekday)
-    sprintf('%2s ', colored_day)
+    # 実際の出力は色付きだが、幅を揃えるために2桁固定
+    sprintf('%2s ', colorize_day(day, weekday))
   end
 
   # 曜日に応じて色を付ける
   def colorize_day(day, weekday)
     case weekday
     when 0 # 日曜日
-      "\e[31m#{day}\e[0m" # 赤色
+      "\e[31m#{day.to_s.rjust(2)}\e[0m" # 赤色（右寄せで幅を固定）
     when 6 # 土曜日
-      "\e[34m#{day}\e[0m" # 青色
+      "\e[34m#{day.to_s.rjust(2)}\e[0m" # 青色（右寄せで幅を固定）
     else
-      day.to_s
+      day.to_s.rjust(2) # 通常の文字列も右寄せで幅を固定
     end
   end
 end
